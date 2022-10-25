@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
 // be sure to include its associated Products
     include: [{
       model: Product,
-      attributes: ['id', 'product_name','price','stock','category_name']
+      attributes: ['id', 'product_name','price','stock','category_id']
     }]
   })
     .then(dbCategoryData => res.json(dbCategoryData))
@@ -24,12 +24,13 @@ router.get('/:id', (req, res) => {
     where: {
       id:req.params.id
     },
+    // be sure to include its associated Products
     include: [{
       model: Product,
-      attributes: ['id', 'product_name','price','stock','category_name']
+      attributes: ['id', 'product_name','price','stock','category_id']
     }]
   })
-  // be sure to include its associated Products
+  
   .then(dbCategoryData => {
     if (!dbCategoryData) {
       res.status(404).json({message: 'Please enter a Category ID'});
@@ -55,11 +56,20 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   // update a category by its `id` value
-  Category.update({
-    category_name: req.body.category_name
+  Category.update(req.body,{
+    where: {
+      id: req.params.id
+    }
   })
-  .then(dbCategoryData => res.json(dbCategoryData))
+  .then(dbCategoryData => {
+    if (!dbCategoryData[0]) {
+      res.status(404).json({message: 'Could not find Category to update!'});
+      return;
+    }
+    res.json(dbCategoryData);
+  })
   .catch(err =>{
+    console.log(err);
     res.status(500).json(err);
   });
 });
