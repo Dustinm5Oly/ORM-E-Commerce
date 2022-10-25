@@ -31,7 +31,7 @@ router.get('/:id', (req, res) => {
     where: {
       id: req.params.id
     },
- // be sure to include its associated Category and Tag data
+ // included its associated Category and Tag data
     include: [{
       model: Category,
       attributes: ['id', 'category_name']
